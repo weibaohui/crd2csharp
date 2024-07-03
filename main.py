@@ -526,8 +526,13 @@ status:
     return x
 
 
+def load(file_name):
+    with open("input/" + file_name) as f:
+        return f.read()
+
+
 def start():
-    yaml_data = load()
+    yaml_data = load("referencegrants.yaml")
     data = yaml.safe_load(yaml_data)
     versions = data["spec"]["versions"]
     parent_class_name = data["spec"]["names"]["kind"]
