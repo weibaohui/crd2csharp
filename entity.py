@@ -39,3 +39,5 @@ class EntityInstance:
     @classmethod
     def clear(cls):
         cls.entities.clear()
+
+

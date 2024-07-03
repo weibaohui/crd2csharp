@@ -538,23 +538,27 @@ def start():
         specs = version["schema"]["openAPIV3Schema"]["properties"]["spec"]
         status = version["schema"]["openAPIV3Schema"]["properties"]["status"]
         class_desc = specs["description"]
-        root_class_name = f'{version_name + parent_class_name}'
+        root_class_name = upper_first(f'{version_name + parent_class_name}')
         print(f'class_desc: {class_desc}')
         print(f'root_class_name: {version_name + parent_class_name}\n\n')
         process_spec(specs, f'{parent_class_name}Spec')
         process_status(status, f'{parent_class_name}Status')
-        output(root_class_name,parent_class_name)
+        output(root_class_name, parent_class_name)
 
 
 def output(root_class_name, parent_class_name):
     from mako.template import Template
     mytemplate = Template(filename='tmpl.mako')
-    print(mytemplate.render(data=EntityInstance.get_entities(),
+    out = mytemplate.render(data=EntityInstance.get_entities(),
                             root_class_name=root_class_name,
-                            parent_class_name=parent_class_name))
+                            parent_class_name=parent_class_name)
+    # 将out写入文件
+    with open(f'output/{root_class_name}.cs', 'w', encoding='utf-8') as f:
+        f.write(out)
 
 
 def process_status(dicts: dict, parent_class_name=""):
+    parent_class_name = upper_first(parent_class_name)
     inst = EntityInstance(parent_class_name)
     properties = dicts["properties"]
     for fd in properties:
@@ -569,6 +573,7 @@ def process_status(dicts: dict, parent_class_name=""):
 
 
 def process_spec(dicts: dict, parent_class_name=""):
+    parent_class_name = upper_first(parent_class_name)
     inst = EntityInstance(parent_class_name)
     properties = dicts["properties"]
     for field in properties:
@@ -586,6 +591,10 @@ def process_spec(dicts: dict, parent_class_name=""):
             print(
                 f'parent_class_name: {parent_class_name}\nfield: {field}  {field_type}'
             )
+
+
+def upper_first(s):
+    return s[:1].upper() + s[1:]
 
 
 if __name__ == '__main__':
