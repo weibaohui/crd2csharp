@@ -538,10 +538,20 @@ def start():
         specs = version["schema"]["openAPIV3Schema"]["properties"]["spec"]
         status = version["schema"]["openAPIV3Schema"]["properties"]["status"]
         class_desc = specs["description"]
+        root_class_name = f'{version_name + parent_class_name}'
         print(f'class_desc: {class_desc}')
         print(f'root_class_name: {version_name + parent_class_name}\n\n')
-        process_spec(specs, 'Spec')
-        process_status(status, 'Status')
+        process_spec(specs, f'{parent_class_name}Spec')
+        process_status(status, f'{parent_class_name}Status')
+        output(root_class_name,parent_class_name)
+
+
+def output(root_class_name, parent_class_name):
+    from mako.template import Template
+    mytemplate = Template(filename='tmpl.mako')
+    print(mytemplate.render(data=EntityInstance.get_entities(),
+                            root_class_name=root_class_name,
+                            parent_class_name=parent_class_name))
 
 
 def process_status(dicts: dict, parent_class_name=""):
@@ -580,10 +590,10 @@ def process_spec(dicts: dict, parent_class_name=""):
 
 if __name__ == '__main__':
     start()
-    for k in EntityInstance.entities.keys():
-        entity = EntityInstance.entity(k)
-        print(entity.class_name)
-        print(len(entity.fields))
-        for field in entity.fields:
-            print(f'{field.name}  {field.type}')
-        print(f'\n\n')
+    # for k in EntityInstance.entities.keys():
+    #     entity = EntityInstance.entity(k)
+    #     print(entity.class_name)
+    #     print(len(entity.fields))
+    #     for field in entity.fields:
+    #         print(f'{field.name}  {field.type}')
+    #     print(f'\n\n')
